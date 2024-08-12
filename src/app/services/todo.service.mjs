@@ -12,7 +12,13 @@ export class TodoService {
   }
 
   async findById(id) {
-    return this.todoRepository.findById(id);
+    const todo = await this.todoRepository.findById(id);
+
+    if (!todo) {
+      throw new Error("Todo not found");
+    }
+
+    return todo;
   }
 
   async update(id, todo) {
@@ -23,17 +29,14 @@ export class TodoService {
   }
 
   async doneTodo(id) {
-    const todo = await this.todoRepository.findById(id);
-
-    if (!todo) {
-      throw new Error("Todo not found");
-    }
+    const todo = await this.findById(id);
 
     todo.done = true;
     return this.todoRepository.update(id, todo);
   }
 
   async delete(id) {
+    await this.findById(id);
     return this.todoRepository.delete(id);
   }
 }
